@@ -1,7 +1,9 @@
 /*******************************************************************
+ * $Id$
+ *
  * CD-DA to AIFF-C conversion utility for SGI
  *
- * Copyright (c) Timo Kokkonen, 1996-1997.
+ * Copyright (c) Timo Kokkonen, 1996-1998.
  *
  */
 
@@ -21,11 +23,13 @@
 #include <errno.h>
 
 
-#define VERSIO "1.3"
+#define VERSIO "1.3beta"
 #define PRGNAME "cddaread"
 
 #define AIFFC_HEADER_SIZE 156
 #define FRAMES_PER_READ 12
+
+static char rcsid[] = "$Id$";
 
 char playbuf[FRAMES_PER_READ*CDDA_DATASIZE];  /* buffer for audio playback */
 int  playoffs = 0;
@@ -85,7 +89,7 @@ void p_usage(void)
 {
  if (!quiet_mode) {
   fprintf(stderr, PRGNAME " v"  VERSIO 
-	  "  Copyright (c) Timo Kokkonen, 1996-1997.\n"); 
+	  "  Copyright (c) Timo Kokkonen, 1996-1998.\n"); 
 
   fprintf(stderr,
        "Usage:  " PRGNAME " [options] <targetfile> \n\n"
@@ -168,6 +172,7 @@ int main(int argc, char **argv)
   long sum_lba=0,sum_filesize=0;
   char namebuf[1024];
 
+  if (rcsid); /* to keep compiler happy :) */
 
   if (argc<2) {
     if (!quiet_mode) warn("arguments missing\n"
