@@ -1,0 +1,41 @@
+
+CDDAread v1.3 for SGI   Copyright (c)  Timo Kokkonen, 1996-1998.
+
+
+TESTED PLATFORMS
+	IRIX 5.3
+	IRIX 6.2 
+	IRIX 6.3 (since IRIX 6.3 supports mounting of cdda, probably no
+	          much use for this program...)
+
+
+INSTALLATION
+	Installation should be very straightforward, just unpack the
+	tar file. Type 'make install' if you want to use the precompiled
+	binary. If you want to compile the program check the makefile,
+	then type something like this 'make clean; make; make strip'.
+	Test that the binary works and then type 'make install'.
+
+
+
+HISTORY
+	v1.3   - new usage for -t option, now it's possible to specify
+		 which tracks to read, also put the source under RCS...
+	v1.2.1 - bug fix, v1.2 broke -a and normal modes
+	v1.2   - new option -A, some minor fixes, included preformatted
+		 man page
+	v1.1   - better disc information display (-i and  -I options),
+		 program now detects CD-ROM discs correctly.
+	v1.0   - first public release, added support for AIFF format.
+		 
+
+
+LATEST VERSION
+
+	Latest version is always available from:
+		http://www.jyu.fi/~tjko/projects.html
+
+
+
+Timo <tjko@jyu.fi>
+05-Jan-1998
