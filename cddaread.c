@@ -23,9 +23,10 @@
 #include <errno.h>
 
 
-#define VERSIO "1.3beta"
+#define VERSION "1.3"
 #define PRGNAME "cddaread"
 
+#define MAX_TRACKS 99
 #define AIFFC_HEADER_SIZE 156
 #define FRAMES_PER_READ 12
 
@@ -88,7 +89,7 @@ void no_memory(void)
 void p_usage(void) 
 {
  if (!quiet_mode) {
-  fprintf(stderr, PRGNAME " v"  VERSIO 
+  fprintf(stderr, PRGNAME " v"  VERSION 
 	  "  Copyright (c) Timo Kokkonen, 1996-1998.\n"); 
 
   fprintf(stderr,
@@ -103,7 +104,8 @@ void p_usage(void)
        "  -I             display no. of tracks on disc and exit\n"
        "  -q             quiet mode (display only fatal errors)\n"
        "  -s             enable audio\n"
-       "  -t<number>     read specified track (default: first track)\n"
+       "  -t<number>[,<number>,...]\n"
+       "                 read specified track(s)\n"
        "  -v             enable verbose mode (positively chatty)\n"
        "\n\n");
  }
@@ -161,11 +163,12 @@ int main(int argc, char **argv)
   CDTRACKINFO info;
   CDFRAME *buf;
   FILE *fp;
+  int tracks[MAX_TRACKS+1],tcount;
   int file_format = AF_FILE_AIFFC;  /* set default fileformat to AIFF-C */
   int opt_index = 0;
   int info_mode = 0;
   int c, i, j;
-  char *devname = NULL;
+  char *devname = NULL, *s;
   int retries;
   int track = 0;
   int blocks = 12;
@@ -173,6 +176,8 @@ int main(int argc, char **argv)
   char namebuf[1024];
 
   if (rcsid); /* to keep compiler happy :) */
+  memset(tracks,0,sizeof(tracks));
+
 
   if (argc<2) {
     if (!quiet_mode) warn("arguments missing\n"
@@ -198,7 +203,14 @@ int main(int argc, char **argv)
       file_format=AF_FILE_AIFF;
       break;
     case 't':
-      if (sscanf(optarg,"%d",&track)!=1) die("Invalid option argument");
+      s=strtok(optarg,",");
+      while (s) {
+	if (sscanf(s,"%d",&track)!=1) 
+	  die("Invalid option argument for option -t");
+	if (track > 0 && track <= MAX_TRACKS) tracks[track]=1;
+	else warn("Invalid track number '%d'",track);
+	s=strtok(NULL,",");
+      }
       break;
     case 'v':
       verbose_mode=1;
@@ -232,7 +244,7 @@ int main(int argc, char **argv)
   else if (!info_mode) outfname=strdup(argv[optind]);
 
   if (verbose_mode) {
-    printf("CDDAread v" VERSIO "\n");
+    printf("CDDAread v" VERSION "\n");
     printf("Using CD-ROM device: %s\n",(devname?devname:"default"));
     printf("Audio: %s\n",(sound_on?"on":"off"));
     printf("Target file: %s (AIFF%s)\n",outfname?outfname:"N/A",
@@ -262,9 +274,6 @@ int main(int argc, char **argv)
     if (status.state!=CD_READY) die("No Audio CD in drive.");
   }
   
-  if (track<status.first) track=status.first;
-  if (track>status.last) track=status.last;
-
 
   /* blocks=CDbestreadsize(cd); */
   blocks=FRAMES_PER_READ;
@@ -332,12 +341,27 @@ int main(int argc, char **argv)
   signal(SIGTERM,own_signal_handler);
 
 
+  /* check selected tracks */
+  tcount=0;
+  for(i=1;i<=MAX_TRACKS;i++) {
+    if (i<status.first || i>status.last) tracks[i]=0;
+    else if (all_mode) tracks[i]=1;
+    if (tracks[i]) tcount++;
+  }
+  if (tcount==0) {
+    tracks[status.first]=1;
+    tcount++;
+  }
+  if (verbose_mode) printf("No. of tracks scheduled to be read: %d\n",tcount);
+
+
   /* read audio track(s)... */
-  for(;track<=status.last;track++) {
+  for(track=status.first;track<=status.last;track++) {
+    if (!tracks[track]) continue;
 
     /* Open output AIFF-C file */
-    if (all_mode==2) sprintf(namebuf,"%s.%02d",outfname,track);
-    else sprintf(namebuf,"%s",outfname);
+    if (all_mode==1 || tcount==1) sprintf(namebuf,"%s",outfname);
+    else sprintf(namebuf,"%s.%02d",outfname,track);
     aiffsetup=AFnewfilesetup();
     AFinitrate(aiffsetup,AF_DEFAULT_TRACK,44100.0); /* 44.1 kHz */
     AFinitfilefmt(aiffsetup,file_format);           /* AIFF-C or AIFF */
@@ -397,7 +421,7 @@ int main(int argc, char **argv)
       }
     }
 
-    if (all_mode!=2) break;
+    if (all_mode==1) break;
   } /* end of for loop */
 
 
