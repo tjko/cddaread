@@ -1,0 +1,114 @@
+.TH CDDAREAD 1 "06 Jan 1997" 
+.UC 4 
+.SH NAME 
+cddaread \- utility to read audio track(s) from CD into AIFF/AIFF-C file.
+
+
+.SH SYNOPSIS 
+.B cddaread
+[ 
+.B options 
+] [ 
+.B targetfile 
+] 
+
+.SH DESCRIPTION 
+.I cddaread
+is used to read individual audio tracks from Audio CD or the entire Audio CD. 
+Digital audio is saved in either AIFF-C or AIFF format at 44.1kHz 
+(16bit stereo). 
+Program also supports playback of the audio during the process.  
+
+
+.SH OPTIONS
+.PP
+Options are the traditional POSIX one letter options.
+POSIX style options start with a single
+``\-''.
+
+Options offered by
+.I cddaread
+are the following:
+.TP 0.6i
+.B -a
+Read all audio tracks into same target file. If used with the
+.B -t 
+parameter,
+reads only tracks beginning from the track specified with parameter
+.B -t
+.TP 0.6i
+.B -A
+Read all audio tracks into separate files (track number will be appended
+into given target name). Maybe also used with option
+.B -t
+.TP 0.6i
+.B -d<device>
+Selects the scsi device to use. Device must be a cd-rom drive that supports
+audio xfers. (for example in Indigo2 this usually is /dev/scsi/sc0d3l0).
+By default program automagically uses the first cd-rom found, 
+so this option is usually required only when you have several 
+cd-rom drives.
+.TP 0.6i
+.B -f
+Changes the target file format to AIFF. By default program saves the
+audio in AIFF-C format.
+.TP 0.6i
+.B -h
+Displays short usage information and exits.
+.TP 0.6i
+.B -i
+Display only the disc info (information about audio tracks on disc) and exit
+(it's not necessary to specify targetfile when using this or 
+.B -I
+option).
+.TP 0.6i
+.B -I
+Display only no. of track on the disc and exit.
+.TP 0.6i
+.B -q
+Quiet mode (display only errors).
+.TP 0.6i
+.B -s
+Enable audio. This will enable the audio playback (if the system supports
+it) during the reads.
+.TP 0.6i
+.B -t<number>
+Read the specified track. By default the program will read frist
+audio track found on the disc. If used with 
+.B -a
+or
+.B -A
+option program will read all audio tracks starting from the track 
+specified.
+.TP 0.6i
+.B -v
+Enables verbose mode (positively chatty).
+
+
+.SH BUGS
+When using the
+.B -s 
+option, audio playback may have some clitches, but
+this doesn't affect the audio being saved to disk.
+
+.SH "SEE ALSO" 
+cdman(1), playaifc(1), playaiff(1), aiffcompress(1)
+
+.SH AUTHOR
+Timo Kokkonen (tjko@jyu.fi)
+
+.SH COPYING
+Copyright (C) 1996,1997  Timo Kokkonen
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+ This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
