@@ -100,9 +100,11 @@ static struct option long_options[] = {
   {"ALL",0,0,'A'},
   {"aiff",0,0,'f'},
   {"aiff-c",0,0,'c'},
+#ifdef IRIX6
   {"next",0,0,'n'},
   {"mpeg-1",0,0,'m'},
   {"mpeg-2",0,0,'M'},
+#endif
   {"all",0,0,'a'},
   {"device",1,0,'d'},
   {"help",0,0,'h'},
@@ -140,10 +142,11 @@ void p_usage(void)
        " Set output file format to:\n"
        "  --aiff           AIFF, Audio Interchange File Format\n"
        "  --aiff-c         AIFF-C, extended Audio Interchange File Format (default)\n"
+#ifdef IRIX6
        "  --mpeg-1         ISO/MPEG-1 audio layer I, 192Kbps/channel\n"
        "  --mpeg-2         ISO/MPEG-1 audio layer II, 128Kbps/channel\n"
        "  --next           NeXT .snd and Sun .au format\n"
-
+#endif
        "");
  }
 
@@ -199,7 +202,6 @@ int main(int argc, char **argv)
   CDPARSER *cdp = CDcreateparser();
   CDTRACKINFO info;
   CDFRAME *buf;
-  AUpvlist *pvlist;
   FILE *fp;
   int tracks[MAX_TRACKS+1],tcount;
   int file_format = AF_FILE_AIFFC;  /* set default fileformat to AIFF-C */
@@ -245,6 +247,7 @@ int main(int argc, char **argv)
     case 'c':
       file_format=AF_FILE_AIFFC;
       break;
+#ifdef IRIX6
     case 'n':
       file_format=AF_FILE_NEXTSND;
       break;
@@ -256,6 +259,7 @@ int main(int argc, char **argv)
       file_format=AF_FILE_MPEG1BITSTREAM;
       file_compression=AF_COMPRESSION_DEFAULT_MPEG_II;
       break;
+#endif
     case 't':
       s=strtok(optarg,",");
       while (s) {
@@ -365,7 +369,7 @@ int main(int argc, char **argv)
 	fflush(stdout);
       }
       printf("----------------------------------------------------\n");
-      printf(" %02d.   %2d:%02d.%02d  %6ld %8ldk %11ld bytes\n",
+      printf(" %02d.   %2ld:%02ld.%02ld  %6ld %8ldk %11ld bytes\n",
 	     status.last,
 	     sum_lba/(75*60),(sum_lba%(75*60))/75,sum_lba%75,
 	     sum_lba,
@@ -427,8 +431,10 @@ int main(int argc, char **argv)
     AFinitchannels(aiffsetup,AF_DEFAULT_TRACK,2);   /* stereo */
     AFinitsampfmt(aiffsetup,AF_DEFAULT_TRACK,
 		  AF_SAMPFMT_TWOSCOMP,16);          /* 16bit */
+#ifdef IRIX6
     if (file_format == AF_FILE_MPEG1BITSTREAM)      /* set compression */
       afInitCompression(aiffsetup,AF_DEFAULT_TRACK,file_compression);
+#endif
 
     outfile=AFopenfile(namebuf,"w",aiffsetup);
     if (!outfile) die("Cannot open target file (%s).",namebuf);
@@ -443,8 +449,8 @@ int main(int argc, char **argv)
 
     if (verbose_mode && !(all_mode==1)) {
       printf("Track info: %d\n"
-	     "            length = %2d:%02d.%02d (frames=%d  bytes=%ld)\n"
-	     "            start  = %2d:%02d.%02d (LBA=%d)\n",
+	     "            length = %2d:%02d.%02d (frames=%ld  bytes=%ld)\n"
+	     "            start  = %2d:%02d.%02d (LBA=%ld)\n",
 	     track,
 	     info.total_min,info.total_sec,info.total_frame,len,
 	     len*CDDA_DATASIZE,

@@ -29,6 +29,7 @@
 #undef HAVE_LIBDS
 
 
+#undef IRIX6
 
 #undef HOST_TYPE
 

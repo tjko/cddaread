@@ -10,6 +10,8 @@ AC_CANONICAL_HOST
 HOST_TYPE=$host
 AC_DEFINE_UNQUOTED(HOST_TYPE,"$host")
 
+
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -41,6 +43,25 @@ dnl Checks for library functions.
 AC_CHECK_FUNCS(getopt_long, break, [GNUGETOPT="getopt.o getopt1.o"])
 AC_SUBST(GNUGETOPT)
 
+
+
+dnl Own tests
+
+AC_MSG_CHECKING([if libaudiofile supports MPEG-1 audio layers])
+AC_CACHE_VAL(cddaread_cv_irix6libaudiofile,
+[AC_TRY_COMPILE([
+#include <dmedia/audiofile.h> 
+],[
+void test(void) {
+  int test = AF_FILE_MPEG1BITSTREAM;
+}],
+cddaread_cv_irix6libaudiofile=yes,
+cddaread_cv_irix6libaudiofile=no)])
+
+if test $cddaread_cv_irix6libaudiofile = yes; then
+  AC_DEFINE(IRIX6)
+fi
+AC_MSG_RESULT($cddaread_cv_irix6libaudiofile)
 
 
 
