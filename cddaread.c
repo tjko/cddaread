@@ -144,7 +144,7 @@ void p_usage(void)
        "  --mpeg-2         ISO/MPEG-1 audio layer II, 128Kbps/channel\n"
        "  --next           NeXT .snd and Sun .au format\n"
 
-       "\n");
+       "");
  }
 
  exit(1);

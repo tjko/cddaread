@@ -19,8 +19,8 @@ INSTALLATION
                 cd cddaread-1.4
 
 
-	If you want to use the precompiled binary that (hopefully :)
-	comes with the distribution, just type:
+	If you want to use the precompiled binary (mips-sgi-irix6.2)
+	that (hopefully :) comes with the distribution, just type:
 
 		./configure
 		make install
