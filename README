@@ -43,7 +43,7 @@ INSTALLATION
 HISTORY
 	v1.4   - now uses GNU autoconf and long options,
 	         support for 3 new output file formats: NeXt/Sun, 
-		 MPEG-1 audio layer I & II.
+		 MPEG-1 audio layer I & II (Irix 6.2 and later only).
 	v1.3   - new usage for -t option, now it's possible to specify
 		 which tracks to read, also put the source under RCS...
 	v1.2.1 - bug fix, v1.2 broke -a and normal modes

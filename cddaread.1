@@ -16,11 +16,15 @@ cddaread \- utility to read audio track(s) from CD into digital audio file.
 .I cddaread
 is used to read individual audio tracks from Audio CD or the entire Audio CD. 
 Digital audio is saved in one of the following digital audio formats
-(AIFF-C being the default): AIFF, AIFF-C, NeXt/Sun, MPEG-1 audio layer I, or
+(AIFF-C being the default): AIFF, AIFF-C, NeXT/Sun, MPEG-1 audio layer I, or
 MPEG-1 audio layer II.
 Audio is saved at 44.1kHz (16bit stereo).
 Program also supports playback of the audio during the process.  
 
+.B NOTE!
+MPEG-1 audio layer I&II and NeXT/Sun file formats are only available
+with version 2 or above of libaudiofile.so (Irix 6.2 or later at least
+have this, but Irix 5.x don't).
 
 .SH OPTIONS
 .PP
