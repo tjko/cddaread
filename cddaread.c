@@ -31,7 +31,7 @@
 #include "config.h"
 #endif
 
-#define VERSION "1.4.1"
+#define VERSION "1.4.2"
 #define PRGNAME "cddaread"
 
 #define MAX_TRACKS 99
@@ -215,6 +215,7 @@ int main(int argc, char **argv)
   int blocks = 12;
   long sum_lba=0,sum_filesize=0;
   char namebuf[1024];
+  char *file_format_str;
 
   if (rcsid); /* just to keep compiler happy :) */
 
@@ -307,11 +308,23 @@ int main(int argc, char **argv)
   else if (!info_mode) outfname=strdup(argv[optind]);
 
   if (verbose_mode) {
+    switch(file_format) {
+    case AF_FILE_AIFF: file_format_str="AIFF"; break;
+    case AF_FILE_AIFFC: file_format_str="AIFF-C"; break; 
+    case AF_FILE_NEXTSND: file_format_str="NeXT/Sun"; break;
+    case AF_FILE_MPEG1BITSTREAM:
+      if (file_compression==AF_COMPRESSION_DEFAULT_MPEG_I)
+	file_format_str="MPEG-1 layer I";
+      else 
+	file_format_str="MPEG-1 layer II";
+      break;
+    default: file_format_str = "N/A";
+    }
     printf("CDDAread v" VERSION "\n");
     printf("Using CD-ROM device: %s\n",(devname?devname:"default"));
     printf("Audio: %s\n",(sound_on?"on":"off"));
-    printf("Target file: %s (AIFF%s)\n",outfname?outfname:"N/A",
-	   file_format==AF_FILE_AIFFC?"-C":"");
+    printf("Target file: %s (%s)\n",outfname?outfname:"N/A",
+	   file_format_str);
     fflush(stdout);
   }
 
