@@ -73,7 +73,7 @@ dist:	clean_all
 backup:	dist
 
 
-install: all  install.man
+install: install.man
 	$(INSTALL) -m 755 $(PKGNAME) $(bindir)/$(PKGNAME)
 
 printable.man:
