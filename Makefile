@@ -1,8 +1,10 @@
 ########################################################################
+# $Id$
 #
 # Makefile for CDDAread for SGIs
 #
-Version = 1.2.1
+#
+Version = 1.3
 PKGNAME = cddaread
 
 DEFINES = -DSGI 
@@ -19,7 +21,7 @@ LIBDIRS  =  -L/usr/local/lib
 
 CC     = cc
 CFLAGS = -g $(DEFINES) $(INCLUDES)
-LIBS   = -lcdaudio -laudio -lmediad -laudiofile -laudioutil -lds -lfpe -lm $(LIBDIRS)
+LIBS   = -lcdaudio -laudio -lmediad -laudiofile -laudioutil -lds -lm -lfpe  $(LIBDIRS)
 STRIP  = strip
 
 
@@ -43,9 +45,10 @@ clean:
 	rm -f *~ *.o core a.out make.log $(PKGNAME)
 
 dist:	clean
-	(cd .. ; tar cvzf $(DISTNAME).tar.gz $(DIRNAME))
+	(cd .. ; tar -cvzf $(DISTNAME).tar.gz --exclude RCS $(DIRNAME))
 
-backup:	dist
+backup:	clean
+	(cd .. ; tar cvzf $(DISTNAME).full.tar.gz $(DIRNAME))
 
 zip:	clean	
 	(cd .. ; zip -r9 $(DISTNAME).zip $(DIRNAME))
