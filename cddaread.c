@@ -15,6 +15,11 @@
 #include <dmedia/audio.h>
 #include <dmedia/audiofile.h>
 #include <stdio.h>
+#if HAVE_GETOPT_H && HAVE_GETOPT_LONG
+#include <getopt.h>
+#else
+#include "getopt.h"
+#endif
 #include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -22,8 +27,11 @@
 #include <string.h>
 #include <errno.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#define VERSION "1.3"
+#define VERSION "1.4beta"
 #define PRGNAME "cddaread"
 
 #define MAX_TRACKS 99
@@ -32,23 +40,24 @@
 
 static char rcsid[] = "$Id$";
 
-char playbuf[FRAMES_PER_READ*CDDA_DATASIZE];  /* buffer for audio playback */
-int  playoffs = 0;
+/* buffer for audio playback */
+static char playbuf[FRAMES_PER_READ*CDDA_DATASIZE]; 
+static int  playoffs = 0;
 
 
-ALport audioport;
-AFfilehandle outfile;
-AFfilesetup aiffsetup;
+static ALport audioport;
+static AFfilehandle outfile;
+static AFfilesetup aiffsetup;
 
-int verbose_mode = 0;
-int quiet_mode = 0;
-int all_mode = 0;
-int sound_on = 0;
+static int verbose_mode = 0;
+static int quiet_mode = 0;
+static int all_mode = 0;
+static int sound_on = 0;
 
-char *outfname = NULL;
-long start,stop,len,pos;
-int skip;
-int counter = 0;
+static char *outfname = NULL;
+static long start,stop,len,pos;
+static int skip;
+static int counter = 0;
 
 /*****************************************************************/
 
@@ -86,27 +95,48 @@ void no_memory(void)
   exit(3);
 }
 
+
+static struct option long_options[] = {
+  {"ALL",0,0,'A'},
+  {"aiff",0,0,'f'},
+  {"aiff-c",0,0,'c'},
+  {"all",0,0,'a'},
+  {"device",1,0,'d'},
+  {"help",0,0,'h'},
+  {"info",0,0,'i'},
+  {"no-of-tracks",0,0,'I'},
+  {"quiet",0,0,'q'},
+  {"sound",0,0,'s'},
+  {"track",1,0,'t'},
+  {"verbose",0,0,'v'},
+  {"version",0,0,'z'},
+  {NULL,0,0,0}
+};
+
 void p_usage(void) 
 {
  if (!quiet_mode) {
-  fprintf(stderr, PRGNAME " v"  VERSION 
+  fprintf(stderr, PRGNAME " v"  VERSION "  " HOST_TYPE
 	  "  Copyright (c) Timo Kokkonen, 1996-1998.\n"); 
 
   fprintf(stderr,
        "Usage:  " PRGNAME " [options] <targetfile> \n\n"
-       "  -a             read all tracks into one file\n"
-       "  -A             read all tracks into separate files\n"
-       "  -d<device>     specify scsi device to use (must be a cd-rom \n"
-       "                 drive cabable for audio transfers)\n"
-       "  -f             change outputfile format to AIFF (default is AIFF-C)\n"
-       "  -h             display this help and exit\n"
-       "  -i             display disc info and exit\n"
-       "  -I             display no. of tracks on disc and exit\n"
-       "  -q             quiet mode (display only fatal errors)\n"
-       "  -s             enable audio\n"
-       "  -t<number>[,<number>,...]\n"
-       "                 read specified track(s)\n"
-       "  -v             enable verbose mode (positively chatty)\n"
+       "  -d<device>, --device=<device>\n"
+       "                   specify scsi device to use (must be a cd-rom \n"
+       "                   drive cabable for audio transfers)\n"
+       "  -a, --all        read all tracks into one file\n"
+       "  -A, --ALL        read all tracks into separate files\n"
+       "  -h, --help       display this help and exit\n"
+       "  -i, --info       display disc info and exit\n"
+       "  -q, --quiet      quiet mode (display only fatal errors)\n"
+       "  -s, --sound      enable audio\n"
+       "  -v, --verbose    enable verbose mode (positively chatty)\n"
+       "  -t<number>[,<number>,...], --track=<number>[,<number>,...]\n"
+       "                   read specified track(s)\n"
+       "  --aiff           set output file format to AIFF\n"
+       "  --aiff-c         set output file format to AIFF-C (default)\n"
+       "  --no-of-tracks   display only no. of tracks on disc and exit\n"
+       "  --version        display program version and exit\n"
        "\n\n");
  }
 
@@ -126,7 +156,7 @@ long file_size(FILE *fp)
 
 void own_signal_handler(int a)
 {
-  if (verbose_mode) warn("\ngot signal: %d\nAborting...",a);
+  if (verbose_mode) warn("\ngot signal (%d)\nAborting...",a);
   if (outfile) AFclosefile(outfile);
   exit(1);
 }
@@ -175,20 +205,21 @@ int main(int argc, char **argv)
   long sum_lba=0,sum_filesize=0;
   char namebuf[1024];
 
-  if (rcsid); /* to keep compiler happy :) */
-  memset(tracks,0,sizeof(tracks));
+  if (rcsid); /* just to keep compiler happy :) */
 
+  memset(tracks,0,sizeof(tracks));
 
   if (argc<2) {
     if (!quiet_mode) warn("arguments missing\n"
-                             "Try '" PRGNAME " -h' for more information.");
+			  "Try '" PRGNAME " --help' for more information.");
     exit(1);
   }
  
   /* parse command line parameters */
   while(1) {
     opt_index=0;
-    if ((c=getopt(argc,argv,"d:t:hqvsiafAI"))==-1) break;
+    if ((c=getopt_long(argc,argv,"d:t:hqvsiaA",long_options,&opt_index))
+	 == -1) break;
     switch (c) {
     case 'a':
       all_mode=1;
@@ -201,6 +232,9 @@ int main(int argc, char **argv)
       break;
     case 'f':
       file_format=AF_FILE_AIFF;
+      break;
+    case 'c':
+      file_format=AF_FILE_AIFFC;
       break;
     case 't':
       s=strtok(optarg,",");
@@ -229,6 +263,11 @@ int main(int argc, char **argv)
       break;
     case 's':
       sound_on=1;
+      break;
+    case 'z':
+      printf(PRGNAME " v"  VERSION "  " HOST_TYPE
+	     "\nCopyright (c) Timo Kokkonen, 1996-1998.\n\n"); 
+      exit(0);
       break;
     case '?':
       exit(1);
