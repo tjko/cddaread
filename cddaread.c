@@ -31,7 +31,7 @@
 #include "config.h"
 #endif
 
-#define VERSION "1.4"
+#define VERSION "1.4.1"
 #define PRGNAME "cddaread"
 
 #define MAX_TRACKS 99
@@ -375,7 +375,10 @@ int main(int argc, char **argv)
 	     sum_lba,
 	     sum_lba*CDDA_DATASIZE/1024,
 	     sum_filesize); 
-    } else
+    } 
+    else if (quiet_mode) 
+      printf("%d\n",1+status.last-status.first);
+    else
       printf("Audio tracks on the disc: %d\n",1+status.last-status.first);
 
     exit(0);
