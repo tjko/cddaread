@@ -1,6 +1,9 @@
 CDDAread v1.4 for SGI   Copyright (c)  Timo Kokkonen, 1996-1998.
 
 
+CD-DA to digital audio file conversion utility for SGI
+
+
 TESTED PLATFORMS
 	IRIX 5.3
 	IRIX 6.2 
@@ -39,8 +42,8 @@ INSTALLATION
 
 HISTORY
 	v1.4   - now uses GNU autoconf and long options,
-	         support for new output file formats: NeXt/Sun, 
-		 MPEG-1 layer I & II.
+	         support for 3 new output file formats: NeXt/Sun, 
+		 MPEG-1 audio layer I & II.
 	v1.3   - new usage for -t option, now it's possible to specify
 		 which tracks to read, also put the source under RCS...
 	v1.2.1 - bug fix, v1.2 broke -a and normal modes

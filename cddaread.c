@@ -1,7 +1,7 @@
 /*******************************************************************
  * $Id$
  *
- * CD-DA to AIFF-C conversion utility for SGI
+ * CD-DA to digital audio file conversion utility for SGI
  *
  * Copyright (c) Timo Kokkonen, 1996-1998.
  *
@@ -31,7 +31,7 @@
 #include "config.h"
 #endif
 
-#define VERSION "1.4beta"
+#define VERSION "1.4"
 #define PRGNAME "cddaread"
 
 #define MAX_TRACKS 99
