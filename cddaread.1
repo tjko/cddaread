@@ -1,7 +1,7 @@
 .TH CDDAREAD 1 "05 Jan 1998" 
 .UC 4 
 .SH NAME 
-cddaread \- utility to read audio track(s) from CD into AIFF/AIFF-C file.
+cddaread \- utility to read audio track(s) from CD into digital audio file.
 
 
 .SH SYNOPSIS 
@@ -15,8 +15,10 @@ cddaread \- utility to read audio track(s) from CD into AIFF/AIFF-C file.
 .SH DESCRIPTION 
 .I cddaread
 is used to read individual audio tracks from Audio CD or the entire Audio CD. 
-Digital audio is saved in either AIFF-C or AIFF format at 44.1kHz 
-(16bit stereo). 
+Digital audio is saved in one of the following digital audio formats
+(AIFF-C being the default): AIFF, AIFF-C, NeXt/Sun, MPEG-1 audio layer I, or
+MPEG-1 audio layer II.
+Audio is saved at 44.1kHz (16bit stereo).
 Program also supports playback of the audio during the process.  
 
 
@@ -30,59 +32,80 @@ Options offered by
 .I cddaread
 are the following:
 .TP 0.6i
-.B -a
+.B -a, --all
 Read all audio tracks into same target file. 
 .TP 0.6i
-.B -A
+.B -A, --ALL
 Read all audio tracks into separate files (track number will be appended
 into given target name).
 .TP 0.6i
-.B -d<device>
+.B -d<device>, --device=<device>
 Selects the scsi device to use. Device must be a cd-rom drive that supports
 audio xfers. (for example in Indigo2 this usually is /dev/scsi/sc0d3l0).
 By default program automagically uses the first cd-rom found, 
 so this option is usually required only when you have several 
 cd-rom drives.
 .TP 0.6i
-.B -f
-Changes the target file format to AIFF. By default program saves the
-audio in AIFF-C format.
-.TP 0.6i
-.B -h
+.B -h, --help
 Displays short usage information and exits.
 .TP 0.6i
-.B -i
+.B -i, --info
 Display only the disc info (information about audio tracks on disc) and exit
 (it's not necessary to specify targetfile when using this or 
-.B -I
+.B --no-of-tracks
 option).
 .TP 0.6i
-.B -I
-Display only no. of track on the disc and exit.
-.TP 0.6i
-.B -q
+.B -q, --quiet
 Quiet mode (display only errors).
 .TP 0.6i
-.B -s
+.B -s, --sound
 Enable audio. This will enable the audio playback (if the system supports
 it) during the reads.
 .TP 0.6i
-.B -t<number>[,<number>,...]
+.B -t<number>[,<number>,...], --track=<number>[,<number>,...]
 Read the specified track. By default the program will read frist
 audio track found on the disc. 
 To read multiple tracks you can give comma separated list of track
 numbers to this option or use this option multiple times on command line
 (to read all tracks from CD it might be easier to use
-.B -A 
+.B --ALL 
 option instead).
 This option has no meaning if used with
-.B -a
+.B --all
 or
-.B -A
+.B --ALL
 option.
 .TP 0.6i
-.B -v
+.B -v, --verbose
 Enables verbose mode (positively chatty).
+.TP 0.6i
+.B --no-of-tracks
+Display only no. of track on the disc and exit.
+.TP 0.6i
+.B --version
+Display program version and exit.
+
+
+.TP 0.6i
+.B --aiff
+Changes the target file format to AIFF. By default program saves the
+audio in AIFF-C format.
+.TP 0.6i
+.B --aiff-c
+Changes the target file format to AIFF-C, the extended AIFF-C standard format.
+This is the default format for output files.
+.TP 0.6i
+.B --mpeg-1
+Changes the target file format to ISO/MPEG-1 audio layer I, joint-stereo,
+fixed rate at 192Kbps/channel (.mp1).
+.TP 0.6i
+.B --mpeg-2
+Changes the target file format to ISO/MPEG-1 audio layer II, joint-stereo,
+fixed rate at 128Kbps/channel (.mp2).
+.TP 0.6i
+.B --next
+Changes the target file format to NeXT (.snd) / Sun (.au).
+
 
 
 .SH BUGS
@@ -95,7 +118,7 @@ this doesn't affect the audio being saved to disk.
 cdman(1), playaifc(1), playaiff(1), aiffcompress(1)
 
 .SH AUTHOR
-Timo Kokkonen (tjko@jyu.fi)
+Timo Kokkonen (tjko@iki.fi)
 
 .SH COPYING
 Copyright (C) 1996-1998  Timo Kokkonen

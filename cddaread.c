@@ -100,6 +100,9 @@ static struct option long_options[] = {
   {"ALL",0,0,'A'},
   {"aiff",0,0,'f'},
   {"aiff-c",0,0,'c'},
+  {"next",0,0,'n'},
+  {"mpeg-1",0,0,'m'},
+  {"mpeg-2",0,0,'M'},
   {"all",0,0,'a'},
   {"device",1,0,'d'},
   {"help",0,0,'h'},
@@ -122,8 +125,7 @@ void p_usage(void)
   fprintf(stderr,
        "Usage:  " PRGNAME " [options] <targetfile> \n\n"
        "  -d<device>, --device=<device>\n"
-       "                   specify scsi device to use (must be a cd-rom \n"
-       "                   drive cabable for audio transfers)\n"
+       "                   specify scsi device to use (default: first cd-rom found)\n"
        "  -a, --all        read all tracks into one file\n"
        "  -A, --ALL        read all tracks into separate files\n"
        "  -h, --help       display this help and exit\n"
@@ -133,11 +135,16 @@ void p_usage(void)
        "  -v, --verbose    enable verbose mode (positively chatty)\n"
        "  -t<number>[,<number>,...], --track=<number>[,<number>,...]\n"
        "                   read specified track(s)\n"
-       "  --aiff           set output file format to AIFF\n"
-       "  --aiff-c         set output file format to AIFF-C (default)\n"
        "  --no-of-tracks   display only no. of tracks on disc and exit\n"
        "  --version        display program version and exit\n"
-       "\n\n");
+       " Set output file format to:\n"
+       "  --aiff           AIFF, Audio Interchange File Format\n"
+       "  --aiff-c         AIFF-C, extended Audio Interchange File Format (default)\n"
+       "  --mpeg-1         ISO/MPEG-1 audio layer I, 192Kbps/channel\n"
+       "  --mpeg-2         ISO/MPEG-1 audio layer II, 128Kbps/channel\n"
+       "  --next           NeXT .snd and Sun .au format\n"
+
+       "\n");
  }
 
  exit(1);
@@ -192,9 +199,11 @@ int main(int argc, char **argv)
   CDPARSER *cdp = CDcreateparser();
   CDTRACKINFO info;
   CDFRAME *buf;
+  AUpvlist *pvlist;
   FILE *fp;
   int tracks[MAX_TRACKS+1],tcount;
   int file_format = AF_FILE_AIFFC;  /* set default fileformat to AIFF-C */
+  int file_compression = AF_COMPRESSION_NONE;
   int opt_index = 0;
   int info_mode = 0;
   int c, i, j;
@@ -235,6 +244,17 @@ int main(int argc, char **argv)
       break;
     case 'c':
       file_format=AF_FILE_AIFFC;
+      break;
+    case 'n':
+      file_format=AF_FILE_NEXTSND;
+      break;
+    case 'm':
+      file_format=AF_FILE_MPEG1BITSTREAM;
+      file_compression=AF_COMPRESSION_DEFAULT_MPEG_I;
+      break;
+    case 'M':
+      file_format=AF_FILE_MPEG1BITSTREAM;
+      file_compression=AF_COMPRESSION_DEFAULT_MPEG_II;
       break;
     case 't':
       s=strtok(optarg,",");
@@ -403,10 +423,13 @@ int main(int argc, char **argv)
     else sprintf(namebuf,"%s.%02d",outfname,track);
     aiffsetup=AFnewfilesetup();
     AFinitrate(aiffsetup,AF_DEFAULT_TRACK,44100.0); /* 44.1 kHz */
-    AFinitfilefmt(aiffsetup,file_format);           /* AIFF-C or AIFF */
+    AFinitfilefmt(aiffsetup,file_format);           /* set file format */
     AFinitchannels(aiffsetup,AF_DEFAULT_TRACK,2);   /* stereo */
     AFinitsampfmt(aiffsetup,AF_DEFAULT_TRACK,
 		  AF_SAMPFMT_TWOSCOMP,16);          /* 16bit */
+    if (file_format == AF_FILE_MPEG1BITSTREAM)      /* set compression */
+      afInitCompression(aiffsetup,AF_DEFAULT_TRACK,file_compression);
+
     outfile=AFopenfile(namebuf,"w",aiffsetup);
     if (!outfile) die("Cannot open target file (%s).",namebuf);
     counter=0;
