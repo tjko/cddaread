@@ -1,4 +1,4 @@
-.TH CDDAREAD 1 "06 Jan 1997" 
+.TH CDDAREAD 1 "05 Jan 1998" 
 .UC 4 
 .SH NAME 
 cddaread \- utility to read audio track(s) from CD into AIFF/AIFF-C file.
@@ -31,16 +31,11 @@ Options offered by
 are the following:
 .TP 0.6i
 .B -a
-Read all audio tracks into same target file. If used with the
-.B -t 
-parameter,
-reads only tracks beginning from the track specified with parameter
-.B -t
+Read all audio tracks into same target file. 
 .TP 0.6i
 .B -A
 Read all audio tracks into separate files (track number will be appended
-into given target name). Maybe also used with option
-.B -t
+into given target name).
 .TP 0.6i
 .B -d<device>
 Selects the scsi device to use. Device must be a cd-rom drive that supports
@@ -72,14 +67,19 @@ Quiet mode (display only errors).
 Enable audio. This will enable the audio playback (if the system supports
 it) during the reads.
 .TP 0.6i
-.B -t<number>
+.B -t<number>[,<number>,...]
 Read the specified track. By default the program will read frist
-audio track found on the disc. If used with 
+audio track found on the disc. 
+To read multiple tracks you can give comma separated list of track
+numbers to this option or use this option multiple times on command line
+(to read all tracks from CD it might be easier to use
+.B -A 
+option instead).
+This option has no meaning if used with
 .B -a
 or
 .B -A
-option program will read all audio tracks starting from the track 
-specified.
+option.
 .TP 0.6i
 .B -v
 Enables verbose mode (positively chatty).
@@ -98,7 +98,7 @@ cdman(1), playaifc(1), playaiff(1), aiffcompress(1)
 Timo Kokkonen (tjko@jyu.fi)
 
 .SH COPYING
-Copyright (C) 1996,1997  Timo Kokkonen
+Copyright (C) 1996-1998  Timo Kokkonen
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
