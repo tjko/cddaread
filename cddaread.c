@@ -204,7 +204,7 @@ int main(int argc, char **argv)
   CDFRAME *buf;
   FILE *fp;
   int tracks[MAX_TRACKS+1],tcount;
-  int file_format = AF_FILE_AIFFC;  /* set default fileformat to AIFF-C */
+  int file_format = AF_FILE_AIFFC;  /* set default file format to AIFF-C */
   int file_compression = AF_COMPRESSION_NONE;
   int opt_index = 0;
   int info_mode = 0;
@@ -320,7 +320,7 @@ int main(int argc, char **argv)
   cd = CDopen(devname,"r");
   if (!cd) {
     if (errno==ENODEV) die("No AudioCD in drive.");
-    if (errno==EACCES) die("Permission dedied. Cannot open device.");
+    if (errno==EACCES) die("Permission denied. Cannot open device.");
     die("Cannot open device (%d)",errno);
   }
   if (!CDgetstatus(cd,&status)) die("Cannot get device status (%d).",errno);
@@ -396,7 +396,7 @@ int main(int argc, char **argv)
 
   if (cdp) {
     CDaddcallback(cdp, cd_audio, (CDCALLBACKFUNC)parseaudiodata, 0);
-  } else die("Cannot initialize audioparser.");
+  } else die("Cannot initialize audio parser.");
 
   /* initialize signal handlers */
   signal(SIGINT,own_signal_handler);
